@@ -16,6 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LiveData
 import androidx.room.Room
 import com.example.aplikasipencatatanpaket.model.DataPaket
@@ -23,19 +24,13 @@ import com.example.aplikasipencatatanpaket.persistences.AppDatabase
 
 @Composable
 fun PengelolaanPaketScreen() {
-    val context = LocalContext.current
-    val db = Room.databaseBuilder(
-        context,
-        AppDatabase::class.java, "pengelolaan-paket"
-    ).build()
-    val dataPaketDao = db.dataPaketDao()
-
-    val list : LiveData<List<DataPaket>> = dataPaketDao.loadAll()
-    val items: List<DataPaket> by list.observeAsState(initial = listOf())
+    val viewModel = hiltViewModel<PengelolaanPaketViewModel>()
+    val items: List<DataPaket> by viewModel.list.observeAsState(initial =
+    listOf())
 
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        FormPencatatanPaket(dataPaketDao)
+        FormPencatatanPaket()
         LazyColumn(modifier = Modifier.fillMaxWidth()) {
             items(items = items, itemContent = { item ->
                 Row(modifier = Modifier

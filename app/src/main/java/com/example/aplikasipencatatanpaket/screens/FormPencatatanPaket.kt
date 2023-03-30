@@ -20,6 +20,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.benasher44.uuid.uuid4
 import com.example.aplikasipencatatanpaket.model.DataPaket
 import com.example.aplikasipencatatanpaket.persistences.DataPaketDao
@@ -28,8 +29,9 @@ import com.example.aplikasipencatatanpaket.ui.theme.Teal200
 import kotlinx.coroutines.launch
 
 @Composable
-fun FormPencatatanPaket(dataPaketDao: DataPaketDao) {
+fun FormPencatatanPaket() {
     val scope = rememberCoroutineScope()
+    val viewModel = hiltViewModel<PengelolaanPaketViewModel>()
     val noResi = remember { mutableStateOf(TextFieldValue("")) }
     val namaBrg = remember { mutableStateOf(TextFieldValue("")) }
     val tglTerima = remember { mutableStateOf(TextFieldValue("")) }
@@ -93,16 +95,14 @@ fun FormPencatatanPaket(dataPaketDao: DataPaketDao) {
         Row (modifier = Modifier.padding(4.dp).fillMaxWidth()) {
             Button(modifier = Modifier.weight(5f), onClick = {
                 val id = uuid4().toString()
-
-                val item = DataPaket(id, noResi.value.text, namaBrg.value.text,
-                    tglTerima.value.text, pengirim.value.text)
                 scope.launch {
-                dataPaketDao.insertAll(item)
+                    viewModel.insert(id, noResi.value.text, namaBrg.value.text,
+                        tglTerima.value.text, pengirim.value.text)
+                    noResi.value = TextFieldValue("")
+                    namaBrg.value = TextFieldValue("")
+                    tglTerima.value = TextFieldValue("")
+                    pengirim.value = TextFieldValue("")
                 }
-                noResi.value = TextFieldValue("")
-                namaBrg.value = TextFieldValue("")
-                tglTerima.value = TextFieldValue("")
-                pengirim.value = TextFieldValue("")
             }, colors = loginButtonColors) {
                 Text(
                     text = "Simpan",
